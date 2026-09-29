@@ -65,7 +65,8 @@ Raw HTML, title/meta/headings, basic canonical signals, alt presence and JSON-LD
 are checked. The public crawler pins DNS, blocks private destinations, stays on the exact
 origin, respects its robots policy, bounds responses and slows requests. Cross-origin
 redirects (including HTTP to HTTPS) require explicitly auditing the final origin separately.
-Wildcard robots rules require fuller tooling; the helper stops instead of guessing them.
+Wildcard robots rules and repeated user-agent groups require fuller tooling; the helper
+stops before fetching pages instead of guessing or silently dropping their rules.
 It is NOT a browser renderer, performance auditor, Googlebot emulator or Search Console.
 
 ## Report and improvements

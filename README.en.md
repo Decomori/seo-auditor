@@ -41,3 +41,9 @@ and installed directory. Use `--mode skill` for the standalone copy instead.
 
 No background hooks, telemetry, shared API keys or automatic production writes are bundled.
 See SECURITY.md and PRIVACY.md for processing boundaries. MIT licensed.
+
+### Crawler limitation
+
+The crawler stops before fetching pages when robots.txt contains repeated user-agent
+groups or wildcard rules that its standard-library parser cannot reliably evaluate.
+Use supplied HTML or a crawler with full support for those rules.

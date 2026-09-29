@@ -46,6 +46,18 @@ class HtmlTests(unittest.TestCase):
     def test_invalid_jsonld_is_syntax_error(self):
         codes=self.codes(GOOD.replace('"@type":"WebPage"','"@type":"WebPage",'))
         self.assertIn('JSONLD_PARSE_ERROR',codes)
+    def test_nonstandard_jsonld_numbers_rejected(self):
+        for literal in ['NaN', 'Infinity', '-Infinity']:
+            with self.subTest(literal=literal):
+                html = GOOD.replace('"@type":"WebPage"', '"values":[{"number":' + literal + '}]')
+                report = m.audit_html(html, 'https://example.com/')
+                self.assertIn('JSONLD_PARSE_ERROR', {f['code'] for f in report['findings']})
+                self.assertEqual(report['jsonld'], [])
+    def test_valid_jsonld_numbers_and_strings_preserved(self):
+        for literal in ['1.5', '1e999', '"NaN"', '"Infinity"']:
+            with self.subTest(literal=literal):
+                html = GOOD.replace('"@type":"WebPage"', '"number":' + literal)
+                self.assertNotIn('JSONLD_PARSE_ERROR', self.codes(html))
     def test_script_does_not_create_fake_heading(self):
         report=m.audit_html(GOOD.replace('</head>','<script>const text="<h1>not a heading</h1>";</script></head>'),'https://example.com/')
         self.assertEqual(report['h1'],['A useful page'])
@@ -98,6 +110,25 @@ class NetworkSafetyTests(unittest.TestCase):
         with patch.object(m.Fetcher,'get',return_value=r) as fetch:
             with self.assertRaises(ValueError):m.crawl('https://example.com/')
             self.assertEqual(fetch.call_count,1)
+    def test_repeated_robots_groups_stop_before_page_request(self):
+        for agent in ['IndependentSEOAuditor', '*']:
+            for separator in ['\n', '\n\n']:
+                with self.subTest(agent=agent, separator=separator):
+                    body = (f'User-agent: {agent}\nDisallow: /other' + separator +
+                            f'User-agent: {agent.lower()} # same group name\nDisallow: /private')
+                    with patch.object(m, 'single_get', return_value=response(
+                            'https://example.com/robots.txt', body)) as fetch, patch.object(m.time, 'sleep'):
+                        with self.assertRaisesRegex(ValueError, 'repeated user-agent groups'):
+                            m.crawl('https://example.com/private')
+                        self.assertEqual(fetch.call_count, 1)
+    def test_repeated_agents_within_one_group_are_allowed(self):
+        body = 'User-agent: *\nUser-agent: *\nDisallow: /private'
+        with patch.object(m, 'single_get', return_value=response(
+                'https://example.com/robots.txt', body)) as fetch, patch.object(m.time, 'sleep'):
+            pages, events, _, _ = m.crawl('https://example.com/private')
+            self.assertEqual(pages, [])
+            self.assertEqual(events[0]['state'], 'not_fetched')
+            self.assertEqual(fetch.call_count, 1)
     def test_robots_403_stops_before_pages(self):
         with patch.object(m.Fetcher,'get',return_value=response('https://example.com/robots.txt',status=403)) as fetch:
             with self.assertRaises(ValueError):m.crawl('https://example.com/')

@@ -26,6 +26,40 @@ MAX_BYTES = 3_000_000
 MAX_REDIRECTS = 5
 
 
+def reject_json_constant(value: str):
+    raise ValueError(f'Invalid JSON number: {value}')
+
+
+def check_robots_support(text: str) -> None:
+    """Stop before fetching pages when robotparser cannot preserve all rules.
+
+    Python's parser uses the first matching group rather than merging repeated
+    groups. Keep the same fail-closed policy as unsupported wildcard rules.
+    """
+    seen: set[str] = set()
+    group: set[str] = set()
+    has_rules = False
+    for line in text.splitlines():
+        clean = line.split('#', 1)[0].strip()
+        key, separator, value = clean.partition(':')
+        if not separator:
+            continue
+        key, value = key.strip().lower(), value.strip()
+        if key == 'user-agent':
+            if has_rules:
+                seen.update(group)
+                group = set()
+                has_rules = False
+            agent = value.lower()
+            if agent in seen:
+                raise ValueError('robots.txt contains repeated user-agent groups requiring a fuller parser. No pages crawled; use supplied HTML or a crawler that merges matching groups.')
+            group.add(agent)
+        elif key in {'allow', 'disallow', 'crawl-delay', 'request-rate'}:
+            has_rules = bool(group)
+            if key in {'allow', 'disallow'} and any(c in value for c in '*$'):
+                raise ValueError('robots.txt contains wildcard/end-anchor rules requiring a fuller parser. No pages crawled; use approved browser inspection or supplied HTML.')
+
+
 class Collector(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -246,7 +280,7 @@ def audit_html(html: str, url: str, intent: str = 'unknown', headers: dict | Non
     structured = []
     for item in parser.jsonld:
         try:
-            value = json.loads(item['text'])
+            value = json.loads(item['text'], parse_constant=reject_json_constant)
             if not isinstance(value, (dict, list)):
                 raise ValueError('JSON-LD root is not an object or array.')
             structured.append({'line': item['line'], 'json_parsed': True})
@@ -278,11 +312,7 @@ def crawl(url: str, max_pages: int = 10, intent: str = 'unknown', include_query:
         robots_note = 'No robots file at inspection time (404/410); crawler allowed.'
     elif robots['status'] == 200:
         robot_text, _ = decode(robots['body'], robots['headers'])
-        # urllib.robotparser does not implement Google wildcard semantics. Fail conservatively.
-        for line in robot_text.splitlines():
-            clean = line.split('#', 1)[0].strip()
-            if re.match(r'(allow|disallow)\s*:', clean, re.I) and any(c in clean.split(':', 1)[1] for c in '*$'):
-                raise ValueError('robots.txt contains wildcard/end-anchor rules requiring a fuller parser. No pages crawled; use approved browser inspection or supplied HTML.')
+        check_robots_support(robot_text)
         robots_note = 'Evaluated for this audit user agent using Python robotparser, NOT a Googlebot simulation.'
     else:
         raise ValueError(f'robots.txt returned {robots["status"]}; no pages crawled. Do not bypass the restriction.')

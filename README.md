@@ -64,6 +64,8 @@ python3 plugins/seo-auditor/skills/seo-auditor/scripts/audit.py --html plugins/s
 
 필요 조건: Host browsing or Python 3.10+; rendered DOM and performance tools are optional and separate.
 
+robots.txt에 반복된 사용자 에이전트 그룹이나 와일드카드 규칙이 있으면, 규칙 누락을 방지하기 위해 페이지 수집 전에 중단합니다.
+
 기본 도구는 정적 HTML 검사입니다. JS 렌더링, Search Console, 검색 순위, Core Web Vitals, 전체 사이트 완전 검사는 포함하지 않습니다.
 
 ## 독립적인 프로젝트 설정
