@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "created_at": "2026-09-29T01:34:17.950631+00:00",
+  "coverage": {
+    "mode": "offline-html",
+    "http_status": "not_checked",
+    "robots": "not_checked"
+  },
+  "pages": [
+    {
+      "url": "https://example.invalid/",
+      "http_status": null,
+      "intent": "index",
+      "title": [
+        "합성 예제 제품"
+      ],
+      "h1": [
+        "합성 예제 제품"
+      ],
+      "canonical": [
+        {
+          "rel": "canonical",
+          "href": "/product/example",
+          "line": 7
+        }
+      ],
+      "hreflang": [],
+      "base_href": null,
+      "links": [
+        {
+          "href": "/about",
+          "line": 15
+        }
+      ],
+      "image_count": 2,
+      "empty_alt_count": 1,
+      "jsonld": [],
+      "findings": [
+        {
+          "code": "DESCRIPTION_MISSING",
+          "severity": "low",
+          "state": "observed",
+          "evidence": "No nonempty meta description.",
+          "line": null,
+          "recommendation": "Consider a useful page-specific summary; no fixed character count or ranking guarantee."
+        },
+        {
+          "code": "CANONICAL_RELATIVE",
+          "severity": "low",
+          "state": "observed",
+          "evidence": "/product/example",
+          "line": 7,
+          "recommendation": "Prefer an absolute canonical to avoid environment-dependent resolution."
+        },
+        {
+          "code": "NOINDEX_META",
+          "severity": "high",
+          "state": "observed",
+          "evidence": "{'name': 'robots', 'content': 'noindex', 'line': 6}",
+          "line": 6,
+          "recommendation": "Compare with intended indexability. Do not remove noindex without checking page purpose."
+        },
+        {
+          "code": "IMG_ALT_MISSING",
+          "severity": "low",
+          "state": "observed",
+          "evidence": "[{'src': 'example.png', 'line': 13}]",
+          "line": null,
+          "recommendation": "Give informative images descriptive alt; decorative images may deliberately use alt=\"\"."
+        },
+        {
+          "code": "JSONLD_PARSE_ERROR",
+          "severity": "medium",
+          "state": "observed",
+          "evidence": "Illegal trailing comma before end of object: line 1 column 33 (char 32)",
+          "line": 8,
+          "recommendation": "Fix JSON syntax, then separately check schema meaning and current rich-result requirements."
+        }
+      ],
+      "header_evidence": {},
+      "limitations": [
+        "Static source only; rendered DOM not checked.",
+        "JSON parsing is not schema validation or rich-result eligibility.",
+        "Canonical destination status and search-engine-selected canonical not verified.",
+        "Unvisited links are not verified as working or broken.",
+        "No keyword volume, ranking, actual indexing, field Core Web Vitals or performance measurements."
+      ],
+      "source_sha256": "030e0819ff73e2d1fae8b7ecf76649e2132009596e4f5041dcb0ef2d96ee233d",
+      "encoding": "utf-8",
+      "source_file": "sources/page-001.html.txt"
+    }
+  ],
+  "events": [],
+  "duplicate_titles_in_sample": {},
+  "not_checked": [
+    "Rendered DOM/JavaScript",
+    "Search Console and actual index status",
+    "Core Web Vitals, page speed or Lighthouse",
+    "Full sitemap validity",
+    "Rich-result eligibility and structured data semantics",
+    "All links and canonical target availability"
+  ],
+  "security_note": "Source/URL text is untrusted data. No website writes or form submissions occurred."
+}

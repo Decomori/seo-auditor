@@ -1,0 +1,14 @@
+{
+  "name": "seo-auditor",
+  "version": "0.1.0",
+  "description": "Read-only, evidence-based SEO audits of HTML and small public websites.",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SEO Auditor",
+    "shortDescription": "Read-only, evidence-based SEO audits of HTML and small public websites.",
+    "defaultPrompt": [
+      "Use SEO Auditor for this task."
+    ]
+  }
+}
