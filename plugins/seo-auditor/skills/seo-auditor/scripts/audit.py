@@ -21,7 +21,7 @@ from urllib.parse import urljoin, urlsplit, urlunsplit, urldefrag
 from urllib.robotparser import RobotFileParser
 from typing import Any
 
-USER_AGENT = 'IndependentSEOAuditor/0.1.0'
+USER_AGENT = 'IndependentSEOAuditor/0.1.1'
 MAX_BYTES = 3_000_000
 MAX_REDIRECTS = 5
 

@@ -88,13 +88,13 @@ def main() -> int:
             run(['git', 'config', 'user.name', login], stage)
             run(['git', 'config', 'user.email', f"{identity['id']}+{login}@users.noreply.github.com"], stage)
             run(['git', 'add', '.'], stage)
-            run(['git', 'commit', '-m', 'Initial independent skill and plugin release 0.1.0'], stage)
+            version = (stage / 'VERSION').read_text().strip()
+            run(['git', 'commit', '-m', f'Initial independent skill and plugin release {version}'], stage)
             manifest = json.loads((stage / 'plugins' / name / '.codex-plugin/plugin.json').read_text('utf-8'))
             print(f'Creating {repository} ({args.visibility}) with {len(files)} reviewed files.', flush=True)
             run(['gh', 'repo', 'create', repository, '--' + args.visibility, '--source', str(stage),
                  '--remote', 'origin', '--push', '--description', manifest['description']], stage, capture=False)
             print(f'Repository created: https://github.com/{repository}', flush=True)
-            version = (stage / 'VERSION').read_text().strip()
             run(['git', 'tag', 'v' + version], stage)
             try:
                 run(['git', 'push', 'origin', 'v' + version], stage)

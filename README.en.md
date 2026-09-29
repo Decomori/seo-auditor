@@ -1,6 +1,6 @@
 # SEO Auditor
 
-Independent agent skill and single-skill plugin, version 0.1.0. No dependency on any
+Independent agent skill and single-skill plugin, version 0.1.1. No dependency on any
 sibling plugin, company data, fixed domain, saved account context or personal paths.
 [한국어](README.md)
 

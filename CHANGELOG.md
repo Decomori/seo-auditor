@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 2026-09-29
+## 0.1.1 — 2026-09-29
 
 - Reject NaN and Infinity JSON-LD constants as syntax errors.
 - Stop before fetching pages when robots.txt repeats a user-agent group; the standard-library parser does not merge those rules.
